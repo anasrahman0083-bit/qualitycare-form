@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QualityCare – Complaint Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1117;
+    --bg: #f5f2ed;
+    --card: #ffffff;
+    --accent: #c0392b;
+    --accent2: #e8d5b0;
+    --muted: #6b6b6b;
+    --border: #ddd8d0;
+    --success: #2d6a4f;
+    --section-num: #c0392b;
+    --input-bg: #faf9f7;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--ink);
+    color: white;
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,.25);
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .brand { font-size: 20px; font-weight: 600; letter-spacing: -.3px; }
+  .brand span { color: var(--accent); }
+  header nav { margin-left: auto; display: flex; gap: 24px; }
+  header nav a { color: #bbb; font-size: 13px; text-decoration: none; font-weight: 500; transition: color .2s; }
+  header nav a:hover { color: #fff; }
+
+  /* ── Hero band ── */
+  .hero {
+    background: linear-gradient(135deg, #1a1e2e 0%, #2c1810 100%);
+    padding: 50px 40px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,.015) 40px, rgba(255,255,255,.015) 80px);
+  }
+  .official-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #e8c97a;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .official-badge svg { width: 13px; height: 13px; fill: currentColor; }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 4vw, 42px);
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero p {
+    color: #aaa;
+    font-size: 14px;
+    max-width: 560px;
+    margin: 0 auto 24px;
+    line-height: 1.7;
+  }
+  .mandatory-note {
+    display: inline-block;
+    background: rgba(192,57,43,.2);
+    border: 1px solid rgba(192,57,43,.4);
+    color: #f0a090;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    position: relative;
+  }
+
+  /* ── Category tabs ── */
+  .tabs-wrap {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex; gap: 0;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 14px 22px;
+    font-size: 13px; font-weight: 500;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--muted);
+    transition: all .2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab svg { width: 15px; height: 15px; }
+
+  /* ── Progress ── */
+  .progress-bar-wrap { background: white; padding: 14px 40px; border-bottom: 1px solid var(--border); }
+  .progress-steps { display: flex; align-items: center; max-width: 680px; }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+    color: #ccc;
+  }
+  .step.active { color: var(--accent); }
+  .step.done { color: var(--success); }
+  .step-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid currentColor;
+    display: grid; place-items: center;
+    font-size: 9px; flex-shrink: 0;
+  }
+  .step.done .step-dot { background: var(--success); border-color: var(--success); color: white; }
+  .step.active .step-dot { background: var(--accent); border-color: var(--accent); color: white; }
+  .step-line { flex: 1; height: 2px; background: #e8e4de; margin: 0 6px; min-width: 20px; }
+
+  /* ── Main layout ── */
+  .layout { max-width: 900px; margin: 0 auto; padding: 36px 20px 60px; display: flex; gap: 28px; }
+  .form-col { flex: 1; min-width: 0; }
+  .sidebar { width: 230px; flex-shrink: 0; }
+
+  @media (max-width: 720px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .tabs-wrap { padding: 0 16px; }
+    header { padding: 14px 20px; }
+    header nav { display: none; }
+    .progress-bar-wrap { padding: 12px 16px; }
+    .hero { padding: 30px 20px 28px; }
+  }
+
+  /* ── Sections ── */
+  .section {
+    background: var(--card);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .section-num {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--accent); color: white;
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .section-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .section-sub { font-size: 12px; color: var(--muted); }
+  .section-body { padding: 22px 24px; }
+
+  /* ── Form fields ── */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-grid .full { grid-column: 1 / -1; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: .2px; }
+  label .req { color: var(--accent); margin-left: 2px; }
+  input, select, textarea {
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  input::placeholder, textarea::placeholder { color: #bbb; }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(192,57,43,.1);
+    background: #fff;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; cursor: pointer; }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* ── Complaint type checkboxes ── */
+  .checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .check-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all .18s;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .check-item:hover { border-color: var(--accent); color: var(--ink); }
+  .check-item input[type=checkbox] { display: none; }
+  .check-box {
+    width: 17px; height: 17px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: all .18s;
+  }
+  .check-item.checked { border-color: var(--accent); background: rgba(192,57,43,.04); color: var(--ink); }
+  .check-item.checked .check-box { background: var(--accent); border-color: var(--accent); }
+  .check-item.checked .check-box::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+
+  /* ── Radio buttons ── */
+  .radio-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer; font-size: 13px; color: var(--muted);
+    transition: all .18s; flex: 1; min-width: 100px;
+  }
+  .radio-item:hover { border-color: #aaa; color: var(--ink); }
+  .radio-item input[type=radio] { display: none; }
+  .radio-dot {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-radius: 50%; flex-shrink: 0;
+    display: grid; place-items: center;
+    transition: all .18s;
+  }
+  .radio-item.selected { border-color: var(--accent); color: var(--ink); background: rgba(192,57,43,.04); }
+  .radio-item.selected .radio-dot { border-color: var(--accent); }
+  .radio-item.selected .radio-dot::after { content: ''; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+
+  /* ── File upload ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--input-bg);
+  }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(192,57,43,.03); }
+  .upload-icon { font-size: 32px; margin-bottom: 10px; opacity: .4; }
+  .upload-zone p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .upload-zone .link { color: var(--accent); font-weight: 600; cursor: pointer; }
+  .upload-zone small { font-size: 11px; color: #bbb; }
+
+  /* ── Office-use section ── */
+  .office-section { background: #fffbf5; border: 1.5px dashed #e8c96a; }
+  .office-section .section-num { background: #d4a017; }
+  .office-section .section-header { background: #fffdf0; }
+
+  /* ── Sidebar ── */
+  .sidebar-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+    font-size: 13px;
+  }
+  .sidebar-card h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 12px; }
+  .tip-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .tip-icon { width: 26px; height: 26px; border-radius: 6px; background: var(--accent2); display: grid; place-items: center; flex-shrink: 0; font-size: 13px; }
+  .tip-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .contact-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .contact-item:last-child { border-bottom: none; }
+  .contact-icon { width: 28px; height: 28px; background: #f0ede8; border-radius: 6px; display: grid; place-items: center; font-size: 13px; flex-shrink: 0; }
+
+  /* ── Footer actions ── */
+  .form-footer {
+    background: white;
+    padding: 18px 24px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+    margin-top: 4px;
+  }
+  .btn {
+    padding: 11px 24px;
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px; font-weight: 600;
+    cursor: pointer; border: none; transition: all .18s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost {
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { background: #eee; }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 14px rgba(192,57,43,.35);
+  }
+  .btn-primary:hover { background: #a93226; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(192,57,43,.4); }
+  .disclaimer { font-size: 11px; color: var(--muted); max-width: 360px; line-height: 1.5; }
+
+  .field-row { display: flex; gap: 16px; margin-bottom: 16px; }
+  .field-row .field { flex: 1; }
+  .mt-16 { margin-top: 16px; }
+  .label-row { display: flex; justify-content: space-between; align-items: center; }
+  .char-count { font-size: 11px; color: #bbb; }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px);} to { opacity:1; transform:none; }}
+  .section { animation: fadeUp .4s ease both; }
+  .section:nth-child(2) { animation-delay: .05s; }
+  .section:nth-child(3) { animation-delay: .10s; }
+  .section:nth-child(4) { animation-delay: .15s; }
+  .section:nth-child(5) { animation-delay: .20s; }
+  .section:nth-child(6) { animation-delay: .25s; }
+
+  .warranty-select-wrap { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo-mark">Q</div>
+  <span class="brand">Quality<span>Care</span></span>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Track Complaint</a>
+    <a href="#">Support</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="official-badge">
+    <svg viewBox="0 0 24 24"><path d="M12 1l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+    Official Statement
+  </div>
+  <h1>Complaint Registration Form</h1>
+  <p>Register your product complaint with detailed information. All fields marked with <strong style="color:#f0a090">*</strong> are mandatory.</p>
+  <div class="mandatory-note">⚑ &nbsp;Kitchen Accessories &nbsp;|&nbsp; Bathroom &nbsp;|&nbsp; Sanitaryware</div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-wrap">
+  <div class="tab active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    All
+  </div>
+  <div class="tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    Kitchen Accessories
+  </div>
+  <div class="tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l2-10h12l2 10H4z"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>
+    Bathroom
+  </div>
+  <div class="tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    Sanitaryware
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar-wrap">
+  <div class="progress-steps">
+    <div class="step done">
+      <div class="step-dot">✓</div> Customer
+    </div>
+    <div class="step-line"></div>
+    <div class="step active">
+      <div class="step-dot">2</div> Product
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-dot">3</div> Complaint
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-dot">4</div> Warranty
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-dot">5</div> Evidence
+    </div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+  <div class="form-col">
+
+    <!-- Section 01: Customer Details -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div>
+          <div class="section-title">Customer Details</div>
+          <div class="section-sub">Please provide your personal contact information</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field full">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" placeholder="Enter your full name">
+          </div>
+          <div class="field">
+            <label>Contact Number <span class="req">*</span></label>
+            <input type="tel" placeholder="+91 99999 99999">
+          </div>
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label>Telephone Number</label>
+            <input type="tel" placeholder="+91 80000 00000">
+          </div>
+          <div class="field full">
+            <label>Complete Address <span class="req">*</span></label>
+            <input type="text" placeholder="House No., Street, Locality, Landmark">
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input type="text" placeholder="Your city">
+          </div>
+          <div class="field">
+            <label>State</label>
+            <select>
+              <option value="">Select state</option>
+              <option>Maharashtra</option>
+              <option>Delhi</option>
+              <option>Karnataka</option>
+              <option>Tamil Nadu</option>
+              <option>Gujarat</option>
+              <option>Rajasthan</option>
+              <option>West Bengal</option>
+              <option>Uttar Pradesh</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Pin Code</label>
+            <input type="text" placeholder="400001" maxlength="6">
+          </div>
+          <div class="field">
+            <label>Dealer / Retailer Name</label>
+            <input type="text" placeholder="Store or shop name">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 02: Product Details -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div>
+          <div class="section-title">Product Details</div>
+          <div class="section-sub">Information about the product you're registering a complaint for</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field full">
+            <label>Product Category <span class="req">*</span></label>
+            <select>
+              <option value="">Select a category</option>
+              <option>Kitchen Accessories</option>
+              <option>Bathroom Fittings</option>
+              <option>Sanitaryware</option>
+              <option>Faucets & Taps</option>
+              <option>Showers & Panels</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Product Name / Model <span class="req">*</span></label>
+            <input type="text" placeholder="e.g., FH-2100X Faucet">
+          </div>
+          <div class="field">
+            <label>Product Code / SKU</label>
+            <input type="text" placeholder="e.g., SKU-89472">
+          </div>
+          <div class="field">
+            <label>Select Region <span class="req">*</span></label>
+            <select>
+              <option value="">Select region</option>
+              <option>North India</option>
+              <option>South India</option>
+              <option>East India</option>
+              <option>West India</option>
+              <option>Central India</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Date of Purchase <span class="req">*</span></label>
+            <input type="date">
+          </div>
+          <div class="field">
+            <label>Invoice / Bill Number</label>
+            <input type="text" placeholder="INV-0000001">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 03: Complaint Details -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div>
+          <div class="section-title">Complaint Details</div>
+          <div class="section-sub">Describe the issue with your product in detail</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field" style="margin-bottom:20px">
+          <label>Type of Complaint <span class="req">*</span></label>
+          <div class="checkbox-grid" style="margin-top:8px">
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Hardware / Defect
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Finish Issue
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Broken / Cracked
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Mobility / Parts
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Installation Issue
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Video / Misuse
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              First Issue / Partition
+            </label>
+            <label class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <div class="check-box"></div>
+              Other
+            </label>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:20px">
+          <label>Issue Detected During</label>
+          <div class="radio-row" style="margin-top:8px">
+            <label class="radio-item" onclick="selectRadio(this,'detect')">
+              <input type="radio" name="detect">
+              <div class="radio-dot"></div>
+              After a Week
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'detect')">
+              <input type="radio" name="detect">
+              <div class="radio-dot"></div>
+              First Use
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'detect')">
+              <input type="radio" name="detect">
+              <div class="radio-dot"></div>
+              After a Month
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'detect')">
+              <input type="radio" name="detect">
+              <div class="radio-dot"></div>
+              Within a Month
+            </label>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:20px">
+          <label>Complaint Preference</label>
+          <div class="radio-row" style="margin-top:8px">
+            <label class="radio-item" onclick="selectRadio(this,'pref')">
+              <input type="radio" name="pref">
+              <div class="radio-dot"></div>
+              Within a Week
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'pref')">
+              <input type="radio" name="pref">
+              <div class="radio-dot"></div>
+              First Day
+            </label>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:20px">
+          <label>Preferred Resolution Date</label>
+          <input type="date" style="max-width:260px">
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label>Detailed Description of Issue <span class="req">*</span></label>
+            <span class="char-count" id="charCount">0 / 500</span>
+          </div>
+          <textarea placeholder="Please describe your issue in detail. Include when it started, what you observed, and any steps already taken…" maxlength="500" id="descTextarea" style="margin-top:6px"></textarea>
+          <div style="font-size:11px;color:#bbb;margin-top:5px">An accurate description will help our team resolve your complaint faster.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 04: Warranty Information -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div>
+          <div class="section-title">Warranty Information</div>
+          <div class="section-sub">Let us know the warranty status of your product</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field warranty-select-wrap">
+          <label>Is the product under warranty? <span class="req">*</span></label>
+          <div class="radio-row" style="margin-top:8px">
+            <label class="radio-item" onclick="selectRadio(this,'warranty')">
+              <input type="radio" name="warranty">
+              <div class="radio-dot"></div>
+              Yes — Under Warranty
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'warranty')">
+              <input type="radio" name="warranty">
+              <div class="radio-dot"></div>
+              No — Warranty Expired
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'warranty')">
+              <input type="radio" name="warranty">
+              <div class="radio-dot"></div>
+              Not Sure
+            </label>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field full">
+            <label>Select Warranty Period</label>
+            <select>
+              <option value="">Select warranty period</option>
+              <option>6 Months</option>
+              <option>1 Year</option>
+              <option>2 Years</option>
+              <option>3 Years</option>
+              <option>5 Years</option>
+              <option>Lifetime</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Warranty Card Number</label>
+            <input type="text" placeholder="WC-XXXXXXXX">
+          </div>
+          <div class="field">
+            <label>Warranty Start Date</label>
+            <input type="date">
+          </div>
+          <div class="field">
+            <label>Warranty End Date</label>
+            <input type="date">
+          </div>
+        </div>
+        <div style="background:#f8f4f0;border-radius:9px;padding:13px 16px;margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6;">
+          ℹ️ &nbsp;Note: You may have to be contacted by our standard warranty media. Our standard warranty covers manufacturing defects only and excludes will cover. Standard returns to manufacturer procedures required when natural wear and tear.
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 05: Photo / Video Evidence -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <div>
+          <div class="section-title">Photo / Video Evidence</div>
+          <div class="section-sub">Upload images or videos to support your complaint</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">☁</div>
+          <p><span class="link">Drag &amp; drop files here</span><br>or click to browse from your device</p>
+          <small style="margin-top:6px;display:block">JPG, PNG, MP4, PDF · Max 10 MB per file · Up to 5 files</small>
+          <input type="file" id="fileInput" multiple style="display:none" onchange="handleFiles(this)">
+        </div>
+        <div id="fileList" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px"></div>
+        <div style="font-size:11px;color:#bbb;margin-top:10px;">By uploading files, you confirm the attachments are directly related to the registered complaint and follow our upload policy.</div>
+      </div>
+    </div>
+
+    <!-- Section 06: For Office Use Only -->
+    <div class="section office-section">
+      <div class="section-header">
+        <div class="section-num" style="background:#d4a017">06</div>
+        <div>
+          <div class="section-title">For Office Use Only</div>
+          <div class="section-sub">To be filled by QualityCare service personnel</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field">
+            <label>Complaint Reference No.</label>
+            <input type="text" placeholder="QC-MMYYYY-XXXX" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+          </div>
+          <div class="field">
+            <label>Date Received</label>
+            <input type="date" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+          </div>
+          <div class="field">
+            <label>Assigned To</label>
+            <input type="text" placeholder="Service Agent Name" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+              <option>Pending Review</option>
+              <option>In Progress</option>
+              <option>Resolved</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Instructions / Remarks</label>
+            <textarea placeholder="Internal notes…" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed;min-height:70px"></textarea>
+          </div>
+          <div class="field">
+            <label>Type Solution</label>
+            <input type="text" placeholder="Resolution type" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+          </div>
+          <div class="field">
+            <label>Trade/Remarks</label>
+            <input type="text" placeholder="" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+          </div>
+          <div class="field">
+            <label>Signature</label>
+            <input type="text" placeholder="Agent signature" disabled style="background:#f5f0e8;color:#aaa;cursor:not-allowed">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Footer Actions -->
+    <div class="form-footer">
+      <div class="disclaimer">By submitting, you confirm all details are accurate. A confirmation will be sent to your registered email/mobile.</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="saveDraft()">
+          💾 Save Draft
+        </button>
+        <button class="btn btn-primary" onclick="submitForm()">
+          ✔ Submit Complaint
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /form-col -->
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <h4>Helpful Tips</h4>
+      <div class="tip-item">
+        <div class="tip-icon">📋</div>
+        <div class="tip-text">Keep your invoice handy — the bill number speeds up processing.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">📸</div>
+        <div class="tip-text">Photos of the defect help our team diagnose faster.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">🔖</div>
+        <div class="tip-text">Note your reference number after submission to track status.</div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Contact Support</h4>
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div><strong style="font-size:13px">1800-XXX-XXXX</strong><br><span style="font-size:11px;color:var(--muted)">Mon–Sat, 9AM–6PM</span></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">✉</div>
+        <div><strong style="font-size:12px">support@qualitycare.in</strong><br><span style="font-size:11px;color:var(--muted)">Response within 24 hrs</span></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">💬</div>
+        <div><strong style="font-size:13px">Live Chat</strong><br><span style="font-size:11px;color:var(--success)">● Available now</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-card" style="background:linear-gradient(135deg,#1a1e2e,#2c1810);color:white">
+      <h4 style="color:#aaa">Track Your Complaint</h4>
+      <p style="font-size:12px;color:#ccc;margin-bottom:12px;line-height:1.6">Already submitted? Enter your reference number to check status.</p>
+      <input type="text" placeholder="QC-052026-XXXX" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:white;margin-bottom:10px">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:12px;padding:9px">Track Status →</button>
+    </div>
+  </div><!-- /sidebar -->
+</div>
+
+<script>
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+  }
+
+  function selectRadio(el, group) {
+    document.querySelectorAll(`.radio-item`).forEach(r => {
+      if (r.querySelector(`input[name="${group}"]`)) r.classList.remove('selected');
+    });
+    el.classList.add('selected');
+  }
+
+  document.getElementById('descTextarea').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length + ' / 500';
+  });
+
+  function handleFiles(input) {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+    Array.from(input.files).forEach(f => {
+      const tag = document.createElement('div');
+      tag.style.cssText = 'background:#f0ede8;border-radius:6px;padding:6px 12px;font-size:12px;display:flex;align-items:center;gap:6px;';
+      tag.innerHTML = `📎 ${f.name} <span style="color:#bbb">(${(f.size/1024).toFixed(0)}KB)</span>`;
+      list.appendChild(tag);
+    });
+  }
+
+  function saveDraft() {
+    alert('Draft saved successfully! You can return to complete the form anytime.');
+  }
+
+  function submitForm() {
+    const name = document.querySelector('input[placeholder="Enter your full name"]').value;
+    if (!name.trim()) {
+      alert('Please fill in your Full Name before submitting.');
+      return;
+    }
+    alert('✅ Complaint submitted successfully!\n\nYour reference number: QC-052026-' + Math.floor(Math.random()*9000+1000) + '\n\nYou will receive a confirmation shortly.');
+  }
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
